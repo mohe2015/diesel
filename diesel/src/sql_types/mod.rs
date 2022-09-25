@@ -43,6 +43,11 @@ use crate::query_builder::QueryId;
 #[diesel(mysql_type(name = "Tiny"))]
 pub struct Bool;
 
+// Needed for https://www.postgresql.org/docs/current/functions-textsearch.html
+#[derive(Debug, Clone, Copy, Default, QueryId, SqlType)]
+#[diesel(postgres_type(oid = 18, array_oid = 1002))]
+pub struct CChar;
+
 /// The tiny integer SQL type.
 ///
 /// This is only available on MySQL.

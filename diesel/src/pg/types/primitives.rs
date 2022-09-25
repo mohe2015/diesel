@@ -21,6 +21,22 @@ impl ToSql<sql_types::Bool, Pg> for bool {
     }
 }
 
+#[cfg(feature = "postgres_backend")]
+impl FromSql<sql_types::CChar, Pg> for char {
+    fn from_sql(bytes: PgValue<'_>) -> deserialize::Result<Self> {
+        Ok(bytes.as_bytes()[0] as char)
+    }
+}
+
+#[cfg(feature = "postgres_backend")]
+impl ToSql<sql_types::CChar, Pg> for char {
+    fn to_sql<'b>(&'b self, out: &mut Output<'b, '_, Pg>) -> serialize::Result {
+        out.write_all(&[*self as u8])
+            .map(|_| IsNull::No)
+            .map_err(Into::into)
+    }
+}
+
 /// The returned pointer is *only* valid for the lifetime to the argument of
 /// `from_sql`. This impl is intended for uses where you want to write a new
 /// impl in terms of `String`, but don't want to allocate. We have to return a
